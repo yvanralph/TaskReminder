@@ -61,6 +61,22 @@ function getuserDate(){
     }
 }
 
+
+// function to validate time in 24hours input
+function getTime(){
+    let regex = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+    let time;
+    while(true){
+        time = prompt("Enter Time for task [HH:MM]: ");
+        if(regex.test(time)){
+            return time;
+        }
+        console.log("Invalid Input, Please Enter Time in 24hrs Format")
+    }
+}
+
+
+
 // function to get currentdate
 function getcurrentdate(){
     const today = new Date();
@@ -70,6 +86,10 @@ function getcurrentdate(){
     let currentdate = `${year}-${month}-${day}`;
     return currentdate; 
 }
+
+
+// ************************************* Today's Section ************************************
+
 
 
 //function to get validated time which must be for that day
@@ -101,93 +121,137 @@ function getvalidatedTime(){
 
 
 
-
-
-// function to validate time in 24hours input
-function getTime(){
-    let regex = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
-    let time;
-    while(true){
-        time = prompt("Enter Time for task [HH:MM]: ");
-        if(regex.test(time)){
-            return time;
-        }
-        console.log("Invalid Input, Please Enter Time in 24hrs Format")
+// function to display overdue and upcoming tasks
+function displaytasks(upcoming,overdue){
+    if (upcoming.length === 0){
+        console.log("No Upcoming tasks at the moment");
+    }
+    else{
+        console.log("");
+        console.log(`______Upcoming Tasks_________`)
+        console.log("|")
+        upcoming.forEach(task => {
+            console.log(`| Task: ${task.taskName} - Time: ${task.taskTime} `);
+    });
+        console.log("");
+    }
+    if (overdue.length === 0){
+        console.log("No Overdue tasks at the moment");
+    }
+    else{
+        console.log(`______Overdue Tasks_________`)
+        console.log("|")
+        overdue.forEach(task => {
+            console.log(`| Task: ${task.taskName} - Time: ${task.taskTime} `);
+    });
+        console.log("");
     }
 }
 
-// Display all tasks no validation for time
-function displayTasks() {
-  let data = loadData(); 
+// function to group tasks of the current date
+function grouptasks(){
+    let data = loadData();
+    let group = [];
+    let currentdate = getcurrentdate();
+    for (const task of data.tasks){
+        if (task.taskDate === currentdate){
+            group.push(task);
+        }
+    }
+    return group;
 
-  if (data.tasks.length === 0) {
-    console.log("No tasks found.");
-    return;
-  }
-
-  console.log("Your Tasks:");
-  data.tasks.forEach(task => {
-    console.log(
-      `ID: ${task.taskId}, Name: ${task.taskName}, Time: ${task.taskTime}, Date: ${task.taskDate}, Section: ${task.taskSection}, Status: ${task.taskStatus}`
-    );
-  });
 }
 
 
 
+// Display Today's tasks Only update overdue by comparing tasktime with current
+function Todaystasks() {
+  let data = loadData(); 
+  let upcoming = [];
+  let overdue = [];
 
-// Display Today's tasks Only
-function displayTasks() {
-  let data = loadData();
+  let group = grouptasks();
+
+  for (const time of group){
+    let tasktime = time.taskTime;
+
+    const[hours, minutes] = tasktime.split(":").map(Number);
+    const inputMinutes = hours*60 + minutes;
+
+    const now = new Date();
+    const currentminutes = now.getHours() * 60 + now.getMinutes();
+    
+    if (inputMinutes > currentminutes){
+        upcoming.push(time);
+    }
+    else{   
+        for (const task of data.tasks){
+            if (task.taskId === time.taskId){
+                task.taskStatus = "Overdue";
+            }
+        }
+        saveData(data);
+        time.taskStatus = "Overdue";
+        overdue.push(time);
+    }
+  }
+  displaytasks(upcoming,overdue);
 
   
+}
 
+//function to add task for todaysection
+function addTodaytask(){
+    let data = loadData();
+    let taskid = idcounter++
+    let name = getName();
+    let usertime = getvalidatedTime();
+    let currentdate = getcurrentdate();
+    let section = "Today";
+    let status = "Upcoming";
+
+    let task ={
+        taskId : taskid,
+        taskName : name,
+        taskTime : usertime,
+        taskDate : currentdate,
+        taskSection : section,
+        taskStatus: status,                
+    }
+
+        data.tasks.push(task);
+        data.idcounter = idcounter;
+        saveData(data);
+        
+        return;
 
 }
 
 
 // function to add task in Today's section
-function addTodaytask(){
-    console.log("Existing tasks are listed HERE !!!!!")
+function Todaysection(){
     let addchoice;
     while (true){
-        addchoice = prompt("Would you like to add new Task [y/n]: ");
-        if (addchoice === "y" || addchoice === "yes"){
-            let taskid = idcounter++
-            let name = getName();
-            let usertime = getvalidatedTime();
-            let currentdate = getcurrentdate();
-            let section = "Today";
-            let status = "Upcoming";
-
-            let task ={
-                taskId : taskid,
-                taskName : name,
-                taskTime : usertime,
-                taskDate : currentdate,
-                taskSection : section,
-                taskStatus: status,                
-            }
-
-            data.tasks.push(task);
-            data.idcounter = idcounter;
-            saveData(data);
-
-            return addTodaytask();
-
-        }
-        else if(addchoice === "n" || addchoice === "no"){
-            return;
+        Todaystasks();
+        addchoice = prompt("Would you like to add new Task [yes or y]: ").toLowerCase();
+        if (addchoice === "y" || addchoice === "yes" || addchoice === "yep" || addchoice === "yeah"){
+            addTodaytask();
         }
         else{
-            console.log("Invalid Input!! Please Enter y or n | Yes or No");
+            break;
         }
 
 
     }
 }
 
-addTodaytask();
+
+// **********************Schedule Section *****************************
+
+
+
+
+
 
 
 
@@ -198,7 +262,7 @@ addTodaytask();
 //     while (true){
 //         choice = prompt("Enter your choice [1-4]: ");
 //         if (choice === "1"){
-//             console.log("Today's Section+++++++");
+//             Todaysection();
 //         }
 //         else if(choice === "2"){
 //             console.log("Schedule section ++++++++++++++");
