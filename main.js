@@ -1,5 +1,26 @@
 const prompt = require('prompt-sync')();
 
+// ******JSON files**********
+function loadData() {
+  if (!fs.existsSync(file)) {
+    return { idCounter: 0, tasks: [] };
+  }
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function saveData(data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+// Global Variable for IDcounter
+let data = loadData();
+let idcounter = data.idCounter;
+
+
+
+
+
+
 // function for main menu
 function getMenu(){
     console.log("*** Welcome To TaskReminder ***");
@@ -98,6 +119,41 @@ function getTime(){
 
 
 // function to add task in Today's section
+function addTodaytask(){
+    console.log("Existing tasks are listed HERE !!!!!")
+    let addchoice;
+    while (true){
+        addchoice = prompt("Would you like to add new Task [y/n]: ");
+        if (addchoice === "y" || addchoice === "yes"){
+            let taskid = idcounter++
+            let name = getName();
+            let usertime = getvalidatedTime();
+            let currentdate = getcurrentdate();
+            let section = "Today";
+            let status = "Upcoming";
+
+            let task ={
+                taskId : taskid,
+                taskName : name,
+                taskTime : usertime,
+                taskDate : currentdate,
+                taskSection : section,
+                taskStatus: status,                
+            }
+            return task;
+
+        }
+        else if(addchoice === "n" || addchoice === "no"){
+            return;
+        }
+        else{
+            console.log("Invalid Input!! Please Enter y or n | Yes or No");
+        }
+
+
+    }
+}
+
 
 
 
