@@ -1,9 +1,13 @@
 const prompt = require('prompt-sync')();
 
 // ******JSON files**********
+
+const fs = require("fs");
+const file = "tasks.json";
+
 function loadData() {
   if (!fs.existsSync(file)) {
-    return { idCounter: 0, tasks: [] };
+    return { idCounter: 1, tasks: [] };
   }
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
@@ -14,10 +18,7 @@ function saveData(data) {
 
 // Global Variable for IDcounter
 let data = loadData();
-let idcounter = data.idCounter;
-
-
-
+let idcounter = data.idcounter;
 
 
 
@@ -115,7 +116,34 @@ function getTime(){
     }
 }
 
+// Display all tasks no validation for time
+function displayTasks() {
+  let data = loadData(); 
 
+  if (data.tasks.length === 0) {
+    console.log("No tasks found.");
+    return;
+  }
+
+  console.log("Your Tasks:");
+  data.tasks.forEach(task => {
+    console.log(
+      `ID: ${task.taskId}, Name: ${task.taskName}, Time: ${task.taskTime}, Date: ${task.taskDate}, Section: ${task.taskSection}, Status: ${task.taskStatus}`
+    );
+  });
+}
+
+
+
+
+// Display Today's tasks Only
+function displayTasks() {
+  let data = loadData();
+
+  
+
+
+}
 
 
 // function to add task in Today's section
@@ -140,7 +168,12 @@ function addTodaytask(){
                 taskSection : section,
                 taskStatus: status,                
             }
-            return task;
+
+            data.tasks.push(task);
+            data.idcounter = idcounter;
+            saveData(data);
+
+            return addTodaytask();
 
         }
         else if(addchoice === "n" || addchoice === "no"){
@@ -154,8 +187,7 @@ function addTodaytask(){
     }
 }
 
-
-
+addTodaytask();
 
 
 
