@@ -29,7 +29,8 @@ function getMenu(){
     console.log("1. Today Tasks");
     console.log("2. Schedule Task");
     console.log("3. View Tasks");
-    console.log("4. Exit");
+    console.log("4. Delete Tasks");
+    console.log("5. Exit");
     console.log("");
 }
 
@@ -307,6 +308,142 @@ function scheduleSection(){
 
 // *********************************View Tasks Section************************************
 
+//function to update status for Viewtask section
+function updatetask(){
+    let data = loadData();
+    let currentdate = getcurrentdate();
+    let currenttime = getcurrenttime();
+    let timenow = `${currentdate}T${currenttime}`;
+
+    for (const task of data.tasks){
+        let timefortask = `${task.taskDate}T${task.taskTime}`;
+        if(timefortask < timenow){
+            task.taskStatus = "Overdue";
+        }
+    }
+    saveData(data);
+    return;
+}
+
+// function to display all tasks
+function showAlltasks(){
+    updatetask();
+    let data = loadData();
+    console.log(`_____________All Tasks____________`)
+    console.log("|")
+    data.tasks.forEach(task => {
+        console.log(`|  -Task Name: ${task.taskName} \n|   Time: ${task.taskTime} - Status: ${task.taskStatus} - Date: ${task.taskDate} \n|`) });
+    
+}
+
+//view section main function
+function viewSection(){
+    showAlltasks();
+    let backchoice;
+    while(true){
+        backchoice = prompt("\n\n ***To Return Main Menu Enter just press [Enter]***");
+        return;
+    }
+}
+
+// *****************************************Delete Task section*************************************************
+
+
+
+function deleteMenu(){
+    console.log("");
+    console.log("1. Delete One Task");
+    console.log("2. Delete All Tasks");
+    console.log("3. Return Home")
+    console.log("");
+}
+
+// function to display all tasks for delete section
+function deleteshowtasks(){
+    updatetask();
+    let data = loadData();
+    console.log(`_____________All Tasks____________`)
+    console.log("|")
+    data.tasks.forEach(task => {
+        console.log(`|  - Task Id: ${task.taskId} Task Name: ${task.taskName} \n|`) });
+    
+}
+
+// function to delete one task
+function deleteOnetask() {
+    deleteshowtasks();
+    let data = loadData();
+    let userid;
+
+    try {
+        userid = parseInt(prompt("Please Enter Task-Id: "), 10); 
+
+        function deleteTaskById(tasks, userid) {
+            return tasks.filter(task => task.taskId !== userid);
+        }
+
+        let beforeLength = data.tasks.length;
+        data.tasks = deleteTaskById(data.tasks, userid);
+
+        if (data.tasks.length < beforeLength) {
+            console.log("Task Deleted");
+            deleteMenu();
+        } else {
+            console.log("No task found with that ID, Try again Later");
+            deleteMenu();
+            return;
+        }
+
+        saveData(data);
+    } catch (err) {
+        console.log("An error occurred:", err.message);
+        deleteMenu();
+        return;
+    }
+}
+
+//function to delete all tasks
+function deleteall(){
+    let data = loadData();
+    let confirmation = prompt("Do you want to DELETE all Tasks? [yes/no]: ").toLowerCase();
+    if (confirmation === "yes" || confirmation === "y" || confirmation === "yeah" || confirmation === "yep"){
+        data.idcounter = 1;
+        data.tasks = [];
+        saveData(data);
+        console.log("\nAll Tasks Deleted");
+        deleteMenu();
+
+    }
+    else{
+        deleteMenu();
+        return;
+    }
+}
+
+//Main function for delete Section
+
+function deleteSection(){
+    deleteMenu();
+    let deletechoice;
+    while(true){
+        deletechoice = prompt("Enter you choice [1-3]: ");
+        if (deletechoice === "1"){
+            deleteOnetask();
+        }
+        else if(deletechoice === "2"){
+            deleteall();
+        }
+        else if(deletechoice === "3"){
+            return;
+        }
+        else{
+            console.log("Invalid input!!! Enter your choice from 1 to 3");
+        }
+    }
+
+}
+
+deleteSection();
 
 
 
@@ -329,8 +466,11 @@ function scheduleSection(){
 //             console.log("view Section+++++++++++++++++++");
 //         }
 //         else if(choice === "4"){
-//             return;
+//             console.log("Delete section ++++++++++++++++++++++++");
 //         }
+//         else if(choice ==== "5"){
+//             return;
+//          }
 //         else{
 //             console.log("Invalid Input!!  Please Try Again");
 //         }
