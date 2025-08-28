@@ -22,19 +22,6 @@ let idcounter = data.idcounter;
 
 
 
-// function for main menu
-function getMenu(){
-    console.log("*** Welcome To TaskReminder ***");
-    console.log("");
-    console.log("1. Today Tasks");
-    console.log("2. Schedule Task");
-    console.log("3. View Tasks");
-    console.log("4. Delete Tasks");
-    console.log("5. Exit");
-    console.log("");
-}
-
-
 //function to get validated taskname
 function getName(){
     let name;
@@ -246,8 +233,10 @@ function todaySection(){
         addchoice = prompt("Would you like to add new Task [yes or y]: ").toLowerCase();
         if (addchoice === "y" || addchoice === "yes" || addchoice === "yep" || addchoice === "yeah"){
             addTodaytask();
+            getMenu();
         }
         else{
+            getMenu();
             break;
         }
 
@@ -301,6 +290,7 @@ function scheduleSection(){
     data.idcounter = idcounter;
     saveData(data);
         
+    getMenu();
     return;
 }
 
@@ -342,6 +332,7 @@ function viewSection(){
     let backchoice;
     while(true){
         backchoice = prompt("\n\n ***To Return Main Menu Enter just press [Enter]***");
+        getMenu();
         return;
     }
 }
@@ -434,6 +425,7 @@ function deleteSection(){
             deleteall();
         }
         else if(deletechoice === "3"){
+            getMenu();
             return;
         }
         else{
@@ -443,37 +435,50 @@ function deleteSection(){
 
 }
 
-deleteSection();
 
 
 
 
 
+// ************************ Main Function Section *****************************************
 
-// Main function
-// function main(){
-//     getMenu();
-//     let choice;
-//     while (true){
-//         choice = prompt("Enter your choice [1-4]: ");
-//         if (choice === "1"){
-//             todaySection();
-//         }
-//         else if(choice === "2"){
-//             console.log("Schedule section ++++++++++++++");
-//         }
-//         else if(choice === "3"){
-//             console.log("view Section+++++++++++++++++++");
-//         }
-//         else if(choice === "4"){
-//             console.log("Delete section ++++++++++++++++++++++++");
-//         }
-//         else if(choice ==== "5"){
-//             return;
-//          }
-//         else{
-//             console.log("Invalid Input!!  Please Try Again");
-//         }
-//     }
-// }
-// main();
+// function for main menu
+function getMenu(){
+    console.log("\n\n*** Welcome To TaskReminder ***");
+    console.log("");
+    console.log("1. Today Tasks");
+    console.log("2. Schedule Task");
+    console.log("3. View Tasks");
+    console.log("4. Delete Tasks");
+    console.log("5. Exit");
+    console.log("");
+}
+
+//Main function
+
+function main(){
+    getMenu();
+    let choice;
+    while (true){
+        choice = prompt("Enter your choice [1-5]: ");
+        if (choice === "1"){
+            todaySection();
+        }
+        else if(choice === "2"){
+            scheduleSection();
+        }
+        else if(choice === "3"){
+            viewSection();
+        }
+        else if(choice === "4"){
+            deleteSection();
+        }
+        else if(choice === "5"){
+            return;
+         }
+        else{
+            console.log("Invalid Input!!  Please Try Again");
+        }
+    }
+}
+main();
