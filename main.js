@@ -233,10 +233,8 @@ function todaySection(){
         addchoice = prompt("Would you like to add new Task [yes or y]: ").toLowerCase();
         if (addchoice === "y" || addchoice === "yes" || addchoice === "yep" || addchoice === "yeah"){
             addTodaytask();
-            getMenu();
         }
         else{
-            getMenu();
             break;
         }
 
@@ -290,7 +288,6 @@ function scheduleSection(){
     data.idcounter = idcounter;
     saveData(data);
         
-    getMenu();
     return;
 }
 
@@ -332,7 +329,6 @@ function viewSection(){
     let backchoice;
     while(true){
         backchoice = prompt("\n\n ***To Return Main Menu Enter just press [Enter]***");
-        getMenu();
         return;
     }
 }
@@ -425,7 +421,6 @@ function deleteSection(){
             deleteall();
         }
         else if(deletechoice === "3"){
-            getMenu();
             return;
         }
         else{
@@ -444,7 +439,7 @@ function deleteSection(){
 
 // function for main menu
 function getMenu(){
-    console.log("\n\n*** Welcome To TaskReminder ***");
+    console.log("\n*** Welcome To TaskReminder ***");
     console.log("");
     console.log("1. Today Tasks");
     console.log("2. Schedule Task");
@@ -457,9 +452,9 @@ function getMenu(){
 //Main function
 
 function main(){
-    getMenu();
     let choice;
     while (true){
+        getMenu();
         choice = prompt("Enter your choice [1-5]: ");
         if (choice === "1"){
             todaySection();
