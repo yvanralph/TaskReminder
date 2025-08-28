@@ -63,7 +63,7 @@ function getuserDate(){
 
 
 // function to validate time in 24hours input
-function getTime(){
+function getuserTime(){
     let regex = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
     let time;
     while(true){
@@ -87,6 +87,15 @@ function getcurrentdate(){
     return currentdate; 
 }
 
+// function to get current time
+function getcurrenttime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    let currenttime = `${hours}:${minutes}`;
+    return currenttime;
+}
 
 // ************************************* Today's Section ************************************
 
@@ -229,7 +238,7 @@ function addTodaytask(){
 
 
 // function to add task in Today's section
-function Todaysection(){
+function todaySection(){
     let addchoice;
     while (true){
         Todaystasks();
@@ -248,6 +257,55 @@ function Todaysection(){
 
 // **********************Schedule Section *****************************
 
+function scheduleStatuscheck(userdate,usertime){
+    let currentdate = getcurrentdate();
+    let currenttime = getcurrenttime();
+    let enteredtime = `${userdate}T${usertime}`;
+    let timenow = `${currentdate}T${currenttime}`;
+
+    if(enteredtime > timenow){
+        return "Upcoming";
+    }
+    else if(enteredtime < timenow){
+        return "Overdue";
+    }
+    else{
+        return "Now";
+    }
+}
+
+
+
+function scheduleSection(){
+    let data = loadData();
+    let taskid = idcounter++
+    let name = getName();
+    let userdate = getuserDate();
+    let usertime = getuserTime();
+    let section = "Schedule";
+    let status = "";
+
+    status = scheduleStatuscheck(userdate,usertime);
+
+    let task ={
+        taskId : taskid,
+        taskName : name,
+        taskTime : usertime,
+        taskDate : userdate,
+        taskSection : section,
+        taskStatus: status,                
+    }
+
+    data.tasks.push(task);
+    data.idcounter = idcounter;
+    saveData(data);
+        
+    return;
+}
+
+
+
+// *********************************View Tasks Section************************************
 
 
 
@@ -262,7 +320,7 @@ function Todaysection(){
 //     while (true){
 //         choice = prompt("Enter your choice [1-4]: ");
 //         if (choice === "1"){
-//             Todaysection();
+//             todaySection();
 //         }
 //         else if(choice === "2"){
 //             console.log("Schedule section ++++++++++++++");
