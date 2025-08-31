@@ -7,7 +7,7 @@ const file = "tasks.json";
 
 function loadData() {
   if (!fs.existsSync(file)) {
-    return { idCounter: 1, tasks: [] };
+    return { lastrun : "0000-00-00", idCounter: 1, tasks: [] };
   }
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
@@ -429,6 +429,44 @@ function deleteSection(){
     }
 
 }
+// ******************** Missed task display Section ************************************
+
+
+
+// function to display missed tasks when program was offline
+function showMissedtasks(missedtasks){
+    if (missedtasks.length > 0){
+        console.log(`_____________Tasks Missed____________`)
+        console.log("|")
+        missedtasks.forEach(task => {
+            console.log(`|  -Task Name: ${task.taskName} \n|   Time: ${task.taskTime} - Status: ${task.taskStatus} - Date: ${task.taskDate} \n|`) });
+    }
+    else{
+        console.log("No Missed Tasks!!!!!")
+    }
+
+    
+}
+
+
+// function to calculate missed tasks when program was offline
+function tasksDTH(){
+    updatetask();
+    let data = loadData();
+    let currentime = getcurrenttime();
+    let currentdate = getcurrentdate();
+    let timenow = `${currentdate}T${currentime}`;
+    let missedtasks = [];
+    for (let task of data.tasks){
+        let taskstime = `${task.taskDate}T${task.taskTime}`;
+        if (taskstime > data.lastrun && taskstime < timenow){
+            missedtasks.push(task);
+        }
+    }
+    showMissedtasks(missedtasks);
+}
+
+
 
 
 
@@ -454,6 +492,7 @@ function getMenu(){
 function main(){
     let choice;
     while (true){
+        tasksDTH();
         getMenu();
         choice = prompt("Enter your choice [1-5]: ");
         if (choice === "1"){
@@ -469,6 +508,12 @@ function main(){
             deleteSection();
         }
         else if(choice === "5"){
+            let data = loadData();
+            let currentime = getcurrenttime();
+            let currentdate = getcurrentdate();
+            let timenow = `${currentdate}T${currentime}`;
+            data.lastrun = timenow;
+            saveData(data);
             return;
          }
         else{
@@ -476,4 +521,5 @@ function main(){
         }
     }
 }
+
 main();
